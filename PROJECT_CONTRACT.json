@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "metrics": {
+    "production_loc": 2381,
+    "production_files": 25,
+    "production_packages": 9,
+    "test_files": 9,
+    "production_functions": 128,
+    "decision_points": 325
+  },
+  "persistence": {
+    "module": "go.etcd.io/bbolt",
+    "entities": [
+      "SensorReading",
+      "AlertSummary",
+      "SnapshotBatch",
+      "ThroughputReport",
+      "VerificationRun"
+    ],
+    "reopen_test": "TestPersistenceSurvivesReopen"
+  },
+  "workflows": [
+    {
+      "steps": [
+        "submit deterministic minute readings and alert summaries",
+        "merge details by their requested sequence",
+        "encrypt details and generate an authentication tag",
+        "persist the snapshot and export its batch file",
+        "verify every detail from the batch file in order"
+      ],
+      "test": "TestBusinessChain09"
+    },
+    {
+      "steps": [
+        "capture a minute of readings and alerts",
+        "load the persisted snapshot batch",
+        "encode the snapshot as a C-compatible frame",
+        "read and authenticate the batch file",
+        "persist the verification run and updated status"
+      ],
+      "test": "TestWorkflowVerifyBatchFile"
+    },
+    {
+      "steps": [
+        "select multiple deterministic batch sizes",
+        "construct ordered monitoring details for each size",
+        "seal and verify each batch",
+        "calculate deterministic elapsed work",
+        "persist the throughput reports for querying"
+      ],
+      "test": "TestWorkflowThroughputReport"
+    }
+  ]
+}
